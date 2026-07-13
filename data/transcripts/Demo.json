@@ -1,0 +1,141 @@
+{
+  "text": "Hello Sir, Myself Vijayam and this topic is about analyzing the effect of sunlight on plant growth using correlation and regression. This idea actually came from my research methodology topic with my professor like thought some concept using this example. So I thought why not we use this topic as my statistics project with the help of our studio. So like whether the sunlight affects the plant growth or not. So I explored different types of data sets with the help of LLM and got a particular data sets which is related with somewhat related to the topic which I thought I would implement this art studio. So I collected the data set and calculated the correlation between them and the interesting part was the result was negative which was in minus 0.122 which means there is a which has a low correlation which means there is no relationship between plant growth and sunlight. And then I visualized this using the plot of like for example I use a scattered plot which does not have any song pattern also and then I added another like added and regression line to the which means like regression line and then it confirmed the thus and like does not affect the plant growth, plant growth. So this was surprising because we usually believe more sunlight equals more plant growth but in my statistical project I like it wrote that sunlight alone does not affect the plant growth but like it also affect like it also has some factors also. So my conclusion is that plant growth is not driven only by sunlight but also some other factors like soil, fertility and many more examples. So this project does not answer only my question but also showed me how statistical I end up statistical analysis of will give us a evidence of contest or assumption I end up give us a evidence of based inside also open. So that's all about my projects thank you.",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 5.92,
+      "text": "Hello Sir, Myself Vijayam and this topic is about analyzing the effect of sunlight on"
+    },
+    {
+      "start": 5.92,
+      "end": 9.08,
+      "text": "plant growth using correlation and regression."
+    },
+    {
+      "start": 9.08,
+      "end": 16.2,
+      "text": "This idea actually came from my research methodology topic with my professor like thought some"
+    },
+    {
+      "start": 16.2,
+      "end": 18.04,
+      "text": "concept using this example."
+    },
+    {
+      "start": 18.04,
+      "end": 27.0,
+      "text": "So I thought why not we use this topic as my statistics project with the help of our"
+    },
+    {
+      "start": 27.0,
+      "end": 28.240000000000002,
+      "text": "studio."
+    },
+    {
+      "start": 28.24,
+      "end": 35.839999999999996,
+      "text": "So like whether the sunlight affects the plant growth or not."
+    },
+    {
+      "start": 35.839999999999996,
+      "end": 42.72,
+      "text": "So I explored different types of data sets with the help of LLM and got a particular"
+    },
+    {
+      "start": 42.72,
+      "end": 48.92,
+      "text": "data sets which is related with somewhat related to the topic which I thought I would"
+    },
+    {
+      "start": 48.92,
+      "end": 50.959999999999994,
+      "text": "implement this art studio."
+    },
+    {
+      "start": 50.96,
+      "end": 58.52,
+      "text": "So I collected the data set and calculated the correlation between them and the interesting"
+    },
+    {
+      "start": 58.52,
+      "end": 67.24000000000001,
+      "text": "part was the result was negative which was in minus 0.122 which means there is a which"
+    },
+    {
+      "start": 67.24000000000001,
+      "end": 72.96000000000001,
+      "text": "has a low correlation which means there is no relationship between plant growth and"
+    },
+    {
+      "start": 72.96000000000001,
+      "end": 73.96000000000001,
+      "text": "sunlight."
+    },
+    {
+      "start": 73.96,
+      "end": 83.0,
+      "text": "And then I visualized this using the plot of like for example I use a scattered plot"
+    },
+    {
+      "start": 83.0,
+      "end": 90.75999999999999,
+      "text": "which does not have any song pattern also and then I added another like added and regression"
+    },
+    {
+      "start": 90.75999999999999,
+      "end": 97.28,
+      "text": "line to the which means like regression line and then it confirmed the thus and like"
+    },
+    {
+      "start": 97.28,
+      "end": 102.68,
+      "text": "does not affect the plant growth, plant growth."
+    },
+    {
+      "start": 102.68,
+      "end": 109.4,
+      "text": "So this was surprising because we usually believe more sunlight equals more plant growth"
+    },
+    {
+      "start": 109.4,
+      "end": 117.44,
+      "text": "but in my statistical project I like it wrote that sunlight alone does not affect the plant"
+    },
+    {
+      "start": 117.44,
+      "end": 123.88,
+      "text": "growth but like it also affect like it also has some factors also."
+    },
+    {
+      "start": 123.88,
+      "end": 131.04,
+      "text": "So my conclusion is that plant growth is not driven only by sunlight but also some other"
+    },
+    {
+      "start": 131.04,
+      "end": 135.92,
+      "text": "factors like soil, fertility and many more examples."
+    },
+    {
+      "start": 135.92,
+      "end": 143.07999999999998,
+      "text": "So this project does not answer only my question but also showed me how statistical I end up"
+    },
+    {
+      "start": 143.07999999999998,
+      "end": 151.76,
+      "text": "statistical analysis of will give us a evidence of contest or assumption I end up give"
+    },
+    {
+      "start": 151.76,
+      "end": 156.76,
+      "text": "us a evidence of based inside also open."
+    },
+    {
+      "start": 156.76,
+      "end": 159.35999999999999,
+      "text": "So that's all about my projects thank you."
+    }
+  ],
+  "duration": 159.35999999999999
+}
