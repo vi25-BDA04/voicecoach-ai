@@ -185,7 +185,7 @@ html, body, #root {
     margin-bottom: 0.6rem; letter-spacing: -0.02em; min-height: 2.4rem;
 }
 .welcome-sub {
-    font-size: 0.95rem; color: var(--text-lo); margin-bottom: 2rem;
+    font-size: 0.95rem; color: var(--text-mid); margin-bottom: 2rem;
     opacity: 0; animation: fadeUp 0.6s ease 2.9s both;
 }
 
@@ -222,8 +222,65 @@ html, body, #root {
     border: 1px solid var(--border); border-radius: 14px;
     padding: 0.7rem 1.4rem; margin-bottom: 1.5rem;
 }
-.nav-bar [data-testid="stHorizontalBlock"] { gap: 0.6rem; }
-.nav-bar-greeting { color: var(--text-lo); font-size: 0.9rem; line-height: 1; }
+.nav-bar [data-testid="stHorizontalBlock"] { gap: 0.6rem; flex-wrap: nowrap !important; overflow-x: auto !important; }
+.nav-bar-greeting { color: var(--text-mid); font-size: 0.88rem; line-height: 1; white-space: nowrap; }
+
+/* This is the actual structural cause of the wrapping: flex children (the column
+   divs Streamlit creates for st.columns) can shrink narrower than their content's
+   natural width by default — that's a well-known flexbox behavior, and no amount
+   of padding/font tweaking on the button INSIDE a shrunk column fixes it. Forcing
+   the columns themselves to never shrink below their content is the real fix. */
+.nav-bar [data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+    flex-shrink: 0 !important;
+    min-width: fit-content !important;
+    width: fit-content !important;
+}
+
+/* Nav buttons were wrapping onto 2-3 lines — the global button style has generous
+   padding meant for big full-width CTAs, which is far too much for these narrow
+   nav-bar columns. Override just within .nav-bar with tighter padding, smaller
+   font, and a hard nowrap on every layer down to the text itself. */
+.nav-bar div.stButton { width: fit-content !important; }
+.nav-bar div.stButton > button {
+    width: fit-content !important;
+    min-width: fit-content !important;
+    padding: 0.55rem 1rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+}
+.nav-bar div.stButton > button p,
+.nav-bar div.stButton > button span,
+.nav-bar div.stButton > button div {
+    white-space: nowrap !important;
+}
+
+/* Home/brand button — styled as a logo, not a bordered button. Scoped via an
+   explicit wrapper div (.brand-slot) rather than :first-of-type, since every
+   nav button sits alone in its own column and is therefore its own
+   ":first-of-type" — that selector was matching nothing distinctly and the
+   brand button fell back to default secondary/bordered styling. */
+.brand-slot div.stButton > button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--accent) !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: -0.01em !important;
+    padding: 0.4rem 0.3rem !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    transition: color 0.2s !important;
+}
+.brand-slot div.stButton > button:hover {
+    color: #FFD08A !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+.brand-slot div.stButton > button p {
+    text-align: left !important;
+}
 
 /* ── HERO ── */
 .hero-wrap { text-align: center; padding: 4rem 1rem 1.5rem; position: relative; }
@@ -252,7 +309,7 @@ html, body, #root {
 }
 @keyframes sheen { to { background-position: -220% center; } }
 .hero-desc {
-    font-size: 1.06rem; color: var(--text-lo); max-width: 490px; margin: 0 auto 2.5rem; line-height: 1.68;
+    font-size: 1.06rem; color: var(--text-mid); max-width: 490px; margin: 0 auto 2.5rem; line-height: 1.68;
     opacity: 0; animation: fadeUp 0.7s ease 0.28s both;
 }
 
@@ -295,7 +352,7 @@ html, body, #root {
 @keyframes scan { 0%{left:-30%;} 100%{left:100%;} }
 .stat-item { text-align: center; }
 .stat-val { font-family: 'Sora', sans-serif !important; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-.stat-lbl { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+.stat-lbl { font-size: 0.72rem; color: var(--text-lo); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
 
 /* ── UPLOAD CARD ── */
 .upload-icon {
@@ -304,7 +361,7 @@ html, body, #root {
 }
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .upload-title { font-family: 'Sora', sans-serif !important; font-size: 1.18rem; font-weight: 700; color: var(--text-hi); text-align:center; margin-bottom: 0.35rem; }
-.upload-sub { font-size: 0.85rem; color: var(--text-dim); text-align:center; margin-bottom: 1.4rem; }
+.upload-sub { font-size: 0.85rem; color: var(--text-lo); text-align:center; margin-bottom: 1.4rem; }
 .format-pills { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.1rem; }
 .pill {
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
@@ -355,8 +412,8 @@ div.stButton > button[kind="secondary"]:hover {
 .m-card:nth-child(3){animation-delay:.19s} .m-card:nth-child(4){animation-delay:.26s}
 .m-card:hover { border-color: rgba(245,166,35,0.35); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
 .m-val { font-family: 'Sora', sans-serif !important; font-size: 1.95rem; font-weight: 700; color: var(--accent); line-height: 1; }
-.m-lbl { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
-.m-hint { font-size: 0.66rem; color: var(--text-faint); margin-top: 0.3rem; }
+.m-lbl { font-size: 0.72rem; color: var(--text-lo); margin-top: 0.4rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+.m-hint { font-size: 0.66rem; color: var(--text-dim); margin-top: 0.3rem; }
 
 /* ── ANALYSIS PIPELINE ── */
 .pipeline { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin: 2.25rem 0 1.5rem; }
@@ -368,7 +425,7 @@ div.stButton > button[kind="secondary"]:hover {
 }
 .pipe-active .pipe-icon { border-color: var(--accent); box-shadow: 0 0 0 7px rgba(245,166,35,0.1); animation: pulseIcon 1.3s ease-in-out infinite; }
 .pipe-done .pipe-icon { border-color: var(--success); background: rgba(34,197,94,0.08); }
-.pipe-label { font-size: 0.72rem; color: var(--text-dim); text-align: center; line-height: 1.3; transition: color 0.3s; }
+.pipe-label { font-size: 0.72rem; color: var(--text-lo); text-align: center; line-height: 1.3; transition: color 0.3s; }
 .pipe-active .pipe-label { color: var(--accent); font-weight: 600; }
 .pipe-done .pipe-label { color: var(--success); }
 .pipe-line { flex: 1; height: 2px; background: var(--border); margin-top: 26px; max-width: 55px; transition: background 0.5s; }
@@ -382,14 +439,14 @@ div.stButton > button[kind="secondary"]:hover {
     border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem 1.5rem 1rem; text-align: center;
     opacity: 0; animation: fadeUp 0.6s ease 0.1s both;
 }
-.score-out-of { text-align:center; color: var(--text-dim); font-size: 0.75rem; margin-top: -0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.score-out-of { text-align:center; color: var(--text-lo); font-size: 0.75rem; margin-top: -0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
 
 /* ── FEEDBACK CARD ── */
 .feedback-card {
     background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
     border: 1px solid var(--border); border-left: 3px solid var(--accent);
     border-radius: 0 16px 16px 0; padding: 1.7rem 1.9rem; font-size: 0.97rem; line-height: 1.8;
-    color: #D1D5DB; opacity: 0; animation: fadeUp 0.6s ease both; position: relative;
+    color: var(--text-hi); opacity: 0; animation: fadeUp 0.6s ease both; position: relative;
 }
 .feedback-card::before {
     content: '"'; position: absolute; top: 0.4rem; left: 1rem; font-family: 'Sora', serif;
@@ -412,7 +469,7 @@ div.stButton > button[kind="secondary"]:hover {
 }
 .error-title { font-family: 'Sora', sans-serif; font-weight: 700; color: #FCA5A5; font-size: 0.95rem; margin-bottom: 0.35rem; }
 .error-msg { color: var(--text-mid); font-size: 0.88rem; line-height: 1.6; }
-.error-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.55rem; }
+.error-hint { color: var(--text-lo); font-size: 0.78rem; margin-top: 0.55rem; }
 
 /* ── CHAT ── */
 .chat-header-wrap {
@@ -433,7 +490,7 @@ div.stButton > button[kind="secondary"]:hover {
     border: 2px solid var(--bg-card); box-shadow: 0 0 6px var(--success); animation: blink 2s ease infinite;
 }
 .chat-title-text { font-family: 'Sora', sans-serif !important; font-size: 0.98rem; font-weight: 700; color: var(--text-hi); }
-.chat-sub-text { font-size: 0.78rem; color: var(--text-lo); margin-left: auto; text-align: right; }
+.chat-sub-text { font-size: 0.78rem; color: var(--text-mid); margin-left: auto; text-align: right; }
 
 [data-testid="stChatMessage"] {
     background: var(--bg-card) !important; border: 1px solid var(--border) !important;
@@ -468,6 +525,56 @@ div.stButton > button[kind="secondary"]:hover {
 [data-testid*="ChatMessageAvatar"] { color: #000 !important; flex-shrink: 0 !important; }
 [data-testid*="ChatMessageAvatar"] [data-testid="stIconMaterial"] { font-size: 18px !important; }
 
+/* TABS */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    background:var(--bg-card) !important;
+    border:1px solid var(--border) !important;
+    border-radius:14px !important;
+    padding:0.35rem !important;
+    gap:0.25rem !important;
+    margin-bottom:1.5rem !important;
+}
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"] {
+    background:transparent !important;
+    border:none !important;
+    border-radius:10px !important;
+    opacity:1 !important;
+    font-weight:600 !important;
+    font-size:0.88rem !important;
+    padding:0.55rem 1.25rem !important;
+    transition:all 0.2s !important;
+}
+/* Nuclear option: force color + opacity + text-fill on the tab AND every single
+   descendant, no matter how deeply the tab library nests its icon/label markup.
+   Earlier attempts only targeted p/span/div one level down and some Streamlit
+   builds still won that fight — this hits every element unconditionally, and
+   -webkit-text-fill-color covers cases where text color is set via a gradient/
+   clip trick that plain `color` can't override. */
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"],
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"] * {
+    color: var(--text-mid) !important;
+    -webkit-text-fill-color: var(--text-mid) !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]:hover,
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]:hover * {
+    color: var(--text-hi) !important;
+    -webkit-text-fill-color: var(--text-hi) !important;
+}
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"][aria-selected="true"] {
+    background: var(--accent) !important;
+    box-shadow: 0 2px 12px rgba(245,166,35,0.3) !important;
+}
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"][aria-selected="true"],
+[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"][aria-selected="true"] * {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    opacity: 1 !important;
+}
+[data-testid="stTabs"] [data-baseweb="tab-highlight"] { display:none !important; }
+[data-testid="stTabs"] [data-baseweb="tab-border"] { display:none !important; }
+
 /* Expander */
 [data-testid="stExpander"] {
     background: var(--bg-card) !important; border: 1px solid var(--border) !important; border-radius: 12px !important;
@@ -475,7 +582,7 @@ div.stButton > button[kind="secondary"]:hover {
 }
 [data-testid="stExpander"]:hover { border-color: rgba(245,166,35,0.3) !important; }
 [data-testid="stExpander"] summary {
-    color: var(--text-lo) !important; font-size: 0.85rem !important; font-weight: 500 !important;
+    color: var(--text-mid) !important; font-size: 0.85rem !important; font-weight: 500 !important;
     transition: color 0.2s !important;
 }
 [data-testid="stExpander"] summary:hover { color: var(--text-hi) !important; }
@@ -625,15 +732,19 @@ hr { border-color: var(--border) !important; margin: 2rem 0 !important; }
 /* ── TEXT INPUT (name gate) ── */
 [data-testid="stTextInput"] * { background-color: transparent !important; box-shadow: none !important; }
 [data-testid="stTextInput"] > div {
-    background: var(--bg-card) !important; border: 1.5px solid var(--border) !important;
-    border-radius: 12px !important; transition: border-color 0.25s !important;
+    background: var(--bg-card) !important; border: 1.5px solid rgba(245,166,35,0.3) !important;
+    border-radius: 14px !important; transition: all 0.25s !important;
+    box-shadow: 0 0 0 3px rgba(245,166,35,0.06), 0 4px 16px rgba(0,0,0,0.25) !important;
 }
-[data-testid="stTextInput"] > div:focus-within { border-color: rgba(245,166,35,0.55) !important; box-shadow: 0 0 0 3px rgba(245,166,35,0.12) !important; }
+[data-testid="stTextInput"] > div:focus-within {
+    border-color: rgba(245,166,35,0.7) !important;
+    box-shadow: 0 0 0 4px rgba(245,166,35,0.16), 0 4px 20px rgba(245,166,35,0.15) !important;
+}
 [data-testid="stTextInput"] input {
     color: var(--text-hi) !important; caret-color: var(--accent) !important;
-    font-size: 0.95rem !important; padding: 0.65rem 0.9rem !important;
+    font-size: 1rem !important; font-weight: 500 !important; padding: 0.75rem 1rem !important;
 }
-[data-testid="stTextInput"] input::placeholder { color: var(--text-dim) !important; }
+[data-testid="stTextInput"] input::placeholder { color: var(--text-lo) !important; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
@@ -665,7 +776,7 @@ hr { border-color: var(--border) !important; margin: 2rem 0 !important; }
 """, unsafe_allow_html=True)
 
 # ── Session state ──
-for key in ["transcript", "metrics", "feedback", "messages", "analysed"]:
+for key in ["transcript", "metrics", "feedback", "messages", "analysed", "naturalness", "authenticity"]:
     if key not in st.session_state:
         st.session_state[key] = [] if key == "messages" else (False if key == "analysed" else None)
 if "uploader_key" not in st.session_state:
@@ -682,6 +793,7 @@ def score_ring_component(score: int, color: str) -> str:
     circumference = 2 * 3.14159265 * r
     offset = circumference * (1 - score / 100)
     return f"""
+    <style>html,body{{margin:0;padding:0;background:transparent;}}</style>
     <div style="display:flex;justify-content:center;align-items:center;">
       <svg width="210" height="210" viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="{r}" fill="none" stroke="#1F2937" stroke-width="14"/>
@@ -728,12 +840,16 @@ def render_pipeline(states) -> str:
 def copy_button_html(text: str) -> str:
     """Small self-contained copy-to-clipboard button. Needs components.html (not
     st.markdown) since the click handler is real JS and markdown scripts aren't
-    reliably executed."""
+    reliably executed. The <style> reset here matters: components.html renders in
+    its own iframe with a default WHITE background, and this button's pale amber
+    text had almost no contrast against that — making it look "invisible" even
+    though it was technically rendering."""
     payload = json.dumps(text)
     return f"""
+    <style>html,body{{margin:0;padding:0;background:transparent;}}</style>
     <button id="copyBtn" style="
-        width:100%; background:rgba(245,166,35,0.14); color:#FFD9A0;
-        border:1px solid rgba(245,166,35,0.4); border-radius:10px;
+        width:100%; background:rgba(245,166,35,0.22); color:#FFD9A0;
+        border:1px solid rgba(245,166,35,0.5); border-radius:10px;
         padding:0.6rem 1rem; font-family:'Inter',sans-serif; font-size:0.85rem;
         font-weight:600; cursor:pointer; transition:transform .2s, background .2s;">
         📋 Copy feedback
@@ -745,11 +861,11 @@ def copy_button_html(text: str) -> str:
         try {{
           await navigator.clipboard.writeText(text);
           btn.textContent = '✓ Copied!';
-          btn.style.background = 'rgba(34,197,94,0.16)';
+          btn.style.background = 'rgba(34,197,94,0.22)';
           btn.style.color = '#86EFAC';
           setTimeout(() => {{
             btn.textContent = '📋 Copy feedback';
-            btn.style.background = 'rgba(245,166,35,0.14)';
+            btn.style.background = 'rgba(245,166,35,0.22)';
             btn.style.color = '#FFD9A0';
           }}, 1800);
         }} catch (e) {{
@@ -770,6 +886,59 @@ def highlight_fillers(text: str, filler_words) -> str:
         pattern = re.compile(rf'(?<!\w)({re.escape(html.escape(w))})(?!\w)', re.IGNORECASE)
         escaped = pattern.sub(r'<mark class="filler-hl">\1</mark>', escaped)
     return escaped
+
+
+def _ask_groq_json(prompt: str) -> dict:
+    """Call Groq, asking for a raw JSON reply, and parse it — used by both the
+    naturalness and authenticity analyses below. Strips markdown code fences in
+    case the model wraps its JSON in ```json anyway."""
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    resp = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=450,
+        temperature=0.6,
+    )
+    raw = resp.choices[0].message.content.strip()
+    raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.MULTILINE).strip()
+    return json.loads(raw)
+
+
+def get_naturalness_analysis(transcript: dict, metrics: dict) -> dict:
+    """How conversational and fluid the delivery sounds, as opposed to stiff or
+    monotone — scored purely from the transcript + metrics we already have."""
+    prompt = f"""Analyze how natural and conversational this speech sounds — flow, variety in
+sentence rhythm, and whether it reads like genuine spoken delivery rather than a stiff,
+monotone recitation.
+
+Transcript: {transcript['text']}
+WPM: {metrics['wpm']}, Fillers: {metrics['total_fillers']}, Duration: {metrics['duration_sec']}s
+
+Respond with ONLY valid JSON, no markdown fences, in this exact shape:
+{{"score": <0-100 integer>, "summary": "<2-3 sentence overview, address the speaker directly as 'you'>", "tips": ["<short actionable tip>", "<short actionable tip>", "<short actionable tip>"]}}"""
+    return _ask_groq_json(prompt)
+
+
+def get_authenticity_analysis(transcript: dict, metrics: dict) -> dict:
+    """A hedged, heuristic estimate of scripted vs. spontaneous delivery based on
+    surface patterns in the transcript (hesitations, self-correction, filler use,
+    sentence variety). This is explicitly NOT a certified AI-content detector —
+    that framing is baked into both the prompt and the UI copy so it can't be
+    read as more authoritative than it actually is."""
+    prompt = f"""Give a rough, heuristic estimate of how much this transcript reads like
+spontaneous, unscripted human speech versus a scripted or heavily rehearsed passage —
+based on things like natural hesitation, self-correction, filler words, sentence
+fragments, and conversational tone versus unusually uniform, polished structure.
+
+Transcript: {transcript['text']}
+Fillers detected: {metrics['total_fillers']}, Word count: {metrics['word_count']}
+
+Be clear this is only a rough educational heuristic based on surface speech patterns,
+not a certified detector of any kind — do not make definitive claims.
+
+Respond with ONLY valid JSON, no markdown fences, in this exact shape:
+{{"score": <0-100 integer, 100 = strongly reads as spontaneous natural speech>, "label": "<short 2-4 word label, e.g. 'Likely Spontaneous' or 'Some Scripted Patterns'>", "summary": "<2-3 sentence overview, address the speaker directly as 'you'>", "indicators": ["<specific observed indicator>", "<specific observed indicator>", "<specific observed indicator>"]}}"""
+    return _ask_groq_json(prompt)
 
 
 def render_history_page():
@@ -793,7 +962,7 @@ def render_history_page():
         fig.update_traces(line_color="#F5A623", marker=dict(color="#F5A623", size=8))
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#8A93A3", family="Inter", size=12),
+            font=dict(color="#B4BCC8", family="Inter", size=12),
             margin=dict(l=0, r=0, t=10, b=0), height=220,
             xaxis=dict(gridcolor="#1F2937"), yaxis=dict(gridcolor="#1F2937", range=[0, 100]),
         )
@@ -808,7 +977,7 @@ def render_history_page():
         <div class="m-card" style="text-align:left; display:flex; align-items:center; justify-content:space-between; padding:1rem 1.3rem; opacity:1; animation:none;">
             <div>
                 <div style="color:var(--text-hi); font-weight:600; font-size:0.9rem;">{html.escape(r['filename'] or 'Recording')}</div>
-                <div style="color:var(--text-dim); font-size:0.76rem; margin-top:2px;">{dt} · {wpm_val:.0f} WPM · {r['total_fillers']} fillers</div>
+                <div style="color:var(--text-lo); font-size:0.76rem; margin-top:2px;">{dt} · {wpm_val:.0f} WPM · {r['total_fillers']} fillers</div>
             </div>
             <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:1.3rem; color:{color};">{score}</div>
         </div>
@@ -868,7 +1037,7 @@ if not st.session_state.user_name:
     gate_col1, gate_col2, gate_col3 = st.columns([1, 1.4, 1])
     with gate_col2:
         name_input = st.text_input("Your name", placeholder="e.g. Priya", label_visibility="collapsed")
-        if st.button("Continue  →", use_container_width=True):
+        if st.button("Continue  →", type="primary", use_container_width=True):
             if name_input.strip():
                 st.session_state.user_name = name_input.strip()
                 st.rerun()
@@ -880,19 +1049,31 @@ if not st.session_state.user_name:
 # NAV
 # ══════════════════
 st.markdown('<div class="nav-bar">', unsafe_allow_html=True)
-nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([3, 1.3, 1.3, 1.2], vertical_alignment="center")
+nav_col0, nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([1.4, 1.1, 1.2, 1.0, 1.1], vertical_alignment="center")
+with nav_col0:
+    st.markdown('<div class="brand-slot">', unsafe_allow_html=True)
+    if st.button("🎙️ VoiceCoach", key="nav_home_brand", use_container_width=True):
+        for key in ["transcript", "metrics", "feedback", "messages", "analysed", "naturalness", "authenticity"]:
+            st.session_state[key] = [] if key == "messages" else (False if key == "analysed" else None)
+        st.session_state.view = "analyze"
+        st.session_state.uploader_key += 1
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 with nav_col1:
     st.markdown(f'<div class="nav-bar-greeting">👋 Hi, <b style="color:var(--text-hi)">{html.escape(st.session_state.user_name)}</b></div>', unsafe_allow_html=True)
 with nav_col2:
-    if st.button("🎤 New Analysis", type=("primary" if st.session_state.view == "analyze" else "secondary"), use_container_width=True):
+    if st.button("🎤 Analyze", type=("primary" if st.session_state.view == "analyze" and not st.session_state.analysed else "secondary"), use_container_width=True):
+        for key in ["transcript", "metrics", "feedback", "messages", "analysed", "naturalness", "authenticity"]:
+            st.session_state[key] = [] if key == "messages" else (False if key == "analysed" else None)
         st.session_state.view = "analyze"
+        st.session_state.uploader_key += 1
         st.rerun()
 with nav_col3:
     if st.button("📜 History", type=("primary" if st.session_state.view == "history" else "secondary"), use_container_width=True):
         st.session_state.view = "history"
         st.rerun()
 with nav_col4:
-    if st.button("Switch user", type="secondary", use_container_width=True):
+    if st.button("Switch", type="secondary", use_container_width=True):
         st.session_state.user_name = None
         st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
@@ -1006,6 +1187,8 @@ if not st.session_state.analysed:
                 st.session_state.transcript = transcript
                 st.session_state.metrics = metrics
                 st.session_state.feedback = feedback
+                st.session_state.naturalness = None
+                st.session_state.authenticity = None
                 st.session_state.analysed = True
                 st.rerun()
 
@@ -1034,168 +1217,238 @@ if st.session_state.analysed:
     st.success("✅  Analysis complete — your coaching report is ready.")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Score + Metrics ──
-    col_score, col_right = st.columns([1, 2], gap="large")
+    # ── Lazy-compute Naturalness & Authenticity once per recording ──
+    if st.session_state.naturalness is None:
+        try:
+            st.session_state.naturalness = get_naturalness_analysis(transcript, metrics)
+        except Exception as e:
+            st.session_state.naturalness = {"error": str(e)}
+    if st.session_state.authenticity is None:
+        try:
+            st.session_state.authenticity = get_authenticity_analysis(transcript, metrics)
+        except Exception as e:
+            st.session_state.authenticity = {"error": str(e)}
 
-    with col_score:
-        st.markdown('<div class="section-label">Confidence Score</div>', unsafe_allow_html=True)
-        ring_color = "#22C55E" if score >= 75 else "#F5A623" if score >= 50 else "#EF4444"
-        st.markdown('<div class="score-card">', unsafe_allow_html=True)
-        components.html(score_ring_component(score, ring_color), height=220)
-        st.markdown('<div class="score-out-of">out of 100</div></div>', unsafe_allow_html=True)
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Metrics & Feedback", "🚀 Naturalness", "🔍 Authenticity", "💬 Chat Coach"])
 
-    with col_right:
-        st.markdown('<div class="section-label">Speech Metrics</div>', unsafe_allow_html=True)
-        wpm_hint = "✓ Good pace" if 120 <= metrics['wpm'] <= 150 else "↑ Too fast" if metrics['wpm'] > 150 else "↓ Too slow"
-        st.markdown(f"""
-        <div class="metrics-grid">
-            <div class="m-card">
-                <div class="m-val">{metrics['wpm']}</div>
-                <div class="m-lbl">Words/min</div>
-                <div class="m-hint">{wpm_hint}</div>
+    with tab1:
+        # ── Score + Metrics ──
+        col_score, col_right = st.columns([1, 2], gap="large")
+
+        with col_score:
+            st.markdown('<div class="section-label">Confidence Score</div>', unsafe_allow_html=True)
+            ring_color = "#22C55E" if score >= 75 else "#F5A623" if score >= 50 else "#EF4444"
+            st.markdown('<div class="score-card">', unsafe_allow_html=True)
+            components.html(score_ring_component(score, ring_color), height=220)
+            st.markdown('<div class="score-out-of">out of 100</div></div>', unsafe_allow_html=True)
+
+        with col_right:
+            st.markdown('<div class="section-label">Speech Metrics</div>', unsafe_allow_html=True)
+            wpm_hint = "✓ Good pace" if 120 <= metrics['wpm'] <= 150 else "↑ Too fast" if metrics['wpm'] > 150 else "↓ Too slow"
+            st.markdown(f"""
+            <div class="metrics-grid">
+                <div class="m-card">
+                    <div class="m-val">{metrics['wpm']}</div>
+                    <div class="m-lbl">Words/min</div>
+                    <div class="m-hint">{wpm_hint}</div>
+                </div>
+                <div class="m-card">
+                    <div class="m-val">{metrics['total_fillers']}</div>
+                    <div class="m-lbl">Fillers</div>
+                    <div class="m-hint">total count</div>
+                </div>
+                <div class="m-card">
+                    <div class="m-val">{metrics['word_count']}</div>
+                    <div class="m-lbl">Words</div>
+                    <div class="m-hint">spoken</div>
+                </div>
+                <div class="m-card">
+                    <div class="m-val">{int(metrics['duration_sec'])}s</div>
+                    <div class="m-lbl">Duration</div>
+                    <div class="m-hint">recording</div>
+                </div>
             </div>
-            <div class="m-card">
-                <div class="m-val">{metrics['total_fillers']}</div>
-                <div class="m-lbl">Fillers</div>
-                <div class="m-hint">total count</div>
+            """, unsafe_allow_html=True)
+
+        # ── Filler Chart ──
+        if metrics["filler_breakdown"]:
+            st.markdown('<div class="section-label">Filler Word Breakdown</div>', unsafe_allow_html=True)
+            fig_bar = px.bar(
+                x=list(metrics["filler_breakdown"].keys()),
+                y=list(metrics["filler_breakdown"].values()),
+                labels={"x": "", "y": "Count"},
+                color=list(metrics["filler_breakdown"].values()),
+                color_continuous_scale=[[0, "#1F2937"], [0.5, "#D97706"], [1, "#F5A623"]],
+                text=list(metrics["filler_breakdown"].values()),
+            )
+            fig_bar.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#B4BCC8", family="Inter", size=12),
+                coloraxis_showscale=False,
+                margin=dict(l=0, r=0, t=10, b=0), height=240,
+                xaxis=dict(gridcolor="#1F2937", tickfont=dict(color="#D1D5DB", size=13)),
+                yaxis=dict(gridcolor="#1F2937", tickfont=dict(color="#B4BCC8")),
+                transition=dict(duration=500, easing="cubic-in-out"),
+            )
+            fig_bar.update_traces(
+                marker_line_width=0,
+                textposition="outside",
+                textfont=dict(color="#F5A623", size=13),
+            )
+            st.plotly_chart(fig_bar, use_container_width=True, config={"displayModeBar": False})
+
+        # ── Transcript ──
+        with st.expander("📄  View full transcript"):
+            filler_words = list(metrics.get("filler_breakdown", {}).keys())
+            highlighted_text = highlight_fillers(transcript["text"], filler_words)
+            st.markdown(f'<div style="color:var(--text-hi);font-size:0.92rem;line-height:1.9;padding:0.5rem 0">{highlighted_text}</div>', unsafe_allow_html=True)
+            if filler_words:
+                st.markdown('<div style="font-size:0.74rem;color:var(--text-lo);margin-top:0.4rem;">🔴 highlighted words are the fillers counted above</div>', unsafe_allow_html=True)
+
+        # ── Coaching Feedback ──
+        st.markdown('<div class="section-label">Coaching Feedback</div>', unsafe_allow_html=True)
+
+        with st.expander("🔍  Show draft (before self-review)"):
+            st.markdown(f'<div style="color:var(--text-mid);font-size:0.88rem;line-height:1.75">{feedback["draft"]}</div>', unsafe_allow_html=True)
+
+        st.markdown(f'<div class="feedback-card">{feedback["final"]}</div>', unsafe_allow_html=True)
+
+        fb_col1, fb_col2 = st.columns([1, 1])
+        with fb_col1:
+            if st.button("🔄  Regenerate feedback", type="secondary"):
+                try:
+                    with st.spinner("Getting a fresh take..."):
+                        st.session_state.feedback = get_coaching_feedback(transcript, metrics)
+                    st.rerun()
+                except Exception as e:
+                    st.markdown(f"""
+                    <div class="error-card" style="margin-top:0.75rem;">
+                        <div class="error-title">⚠️  Couldn't regenerate feedback</div>
+                        <div class="error-msg">{html.escape(str(e))}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+        with fb_col2:
+            components.html(copy_button_html(feedback["final"]), height=48)
+
+
+    with tab2:
+        nat = st.session_state.naturalness
+        st.markdown('<div class="section-label">Naturalness Analysis</div>', unsafe_allow_html=True)
+        if nat and "error" not in nat:
+            n_color = "#22C55E" if nat["score"] >= 75 else "#F5A623" if nat["score"] >= 50 else "#EF4444"
+            components.html(score_ring_component(nat["score"], n_color), height=220)
+            st.markdown(f'<div class="feedback-card">{html.escape(nat["summary"])}</div>', unsafe_allow_html=True)
+            if nat.get("tips"):
+                st.markdown('<div class="section-label" style="margin-top:1.75rem;">Tips</div>', unsafe_allow_html=True)
+                for tip in nat["tips"]:
+                    st.markdown(f'<div style="color:var(--text-mid);font-size:0.92rem;line-height:1.6;margin:0.5rem 0;">• {html.escape(tip)}</div>', unsafe_allow_html=True)
+        else:
+            err_msg = nat.get("error", "Unknown error") if nat else "Unknown error"
+            st.markdown(f'''
+            <div class="error-card">
+                <div class="error-title">⚠️  Couldn\'t generate naturalness analysis</div>
+                <div class="error-msg">{html.escape(str(err_msg))}</div>
             </div>
-            <div class="m-card">
-                <div class="m-val">{metrics['word_count']}</div>
-                <div class="m-lbl">Words</div>
-                <div class="m-hint">spoken</div>
+            ''', unsafe_allow_html=True)
+
+
+    with tab3:
+        auth = st.session_state.authenticity
+        st.markdown('<div class="section-label">Authenticity Check</div>', unsafe_allow_html=True)
+        st.markdown('''
+        <div class="error-card" style="border-left-color:var(--accent-2); background:rgba(56,189,248,0.06); border-color:rgba(56,189,248,0.25);">
+            <div class="error-title" style="color:#7DD3FC;">ℹ️  Heuristic estimate only</div>
+            <div class="error-msg">This is an AI-generated approximation based on surface speech patterns — it's meant for reflection, not a certified authenticity or AI-detection tool.</div>
+        </div>
+        ''', unsafe_allow_html=True)
+        if auth and "error" not in auth:
+            a_color = "#22C55E" if auth["score"] >= 75 else "#F5A623" if auth["score"] >= 50 else "#EF4444"
+            components.html(score_ring_component(auth["score"], a_color), height=220)
+            st.markdown(f'<div style="text-align:center;color:var(--accent);font-weight:700;font-size:1rem;margin:-0.5rem 0 1.25rem;">{html.escape(auth.get("label",""))}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="feedback-card">{html.escape(auth["summary"])}</div>', unsafe_allow_html=True)
+            if auth.get("indicators"):
+                st.markdown('<div class="section-label" style="margin-top:1.75rem;">What stood out</div>', unsafe_allow_html=True)
+                for ind in auth["indicators"]:
+                    st.markdown(f'<div style="color:var(--text-mid);font-size:0.92rem;line-height:1.6;margin:0.5rem 0;">• {html.escape(ind)}</div>', unsafe_allow_html=True)
+        else:
+            err_msg = auth.get("error", "Unknown error") if auth else "Unknown error"
+            st.markdown(f'''
+            <div class="error-card">
+                <div class="error-title">⚠️  Couldn\'t generate authenticity analysis</div>
+                <div class="error-msg">{html.escape(str(err_msg))}</div>
             </div>
-            <div class="m-card">
-                <div class="m-val">{int(metrics['duration_sec'])}s</div>
-                <div class="m-lbl">Duration</div>
-                <div class="m-hint">recording</div>
+            ''', unsafe_allow_html=True)
+
+    with tab4:
+        # ── Chat ──
+        st.markdown("---")
+        st.markdown("""
+        <div class="chat-header-wrap">
+            <div class="chat-avatar">🎙️<div class="chat-dot"></div></div>
+            <div>
+                <div class="chat-title-text">Your AI speech coach</div>
+                <div style="font-size:0.74rem;color:var(--text-lo);margin-top:1px;">Online · powered by Llama 3.3</div>
             </div>
+            <div class="chat-sub-text">Remembers your<br>full session</div>
         </div>
         """, unsafe_allow_html=True)
+        st.markdown('<div style="color:var(--text-mid);font-size:0.82rem;margin:0.75rem 0 1rem">Your coach has full context of your speech and feedback. Ask anything — it remembers the whole conversation.</div>', unsafe_allow_html=True)
 
-    # ── Filler Chart ──
-    if metrics["filler_breakdown"]:
-        st.markdown('<div class="section-label">Filler Word Breakdown</div>', unsafe_allow_html=True)
-        fig_bar = px.bar(
-            x=list(metrics["filler_breakdown"].keys()),
-            y=list(metrics["filler_breakdown"].values()),
-            labels={"x": "", "y": "Count"},
-            color=list(metrics["filler_breakdown"].values()),
-            color_continuous_scale=[[0, "#1F2937"], [0.5, "#D97706"], [1, "#F5A623"]],
-            text=list(metrics["filler_breakdown"].values()),
-        )
-        fig_bar.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#6B7280", family="Inter", size=12),
-            coloraxis_showscale=False,
-            margin=dict(l=0, r=0, t=10, b=0), height=240,
-            xaxis=dict(gridcolor="#1F2937", tickfont=dict(color="#9CA3AF", size=13)),
-            yaxis=dict(gridcolor="#1F2937", tickfont=dict(color="#6B7280")),
-            transition=dict(duration=500, easing="cubic-in-out"),
-        )
-        fig_bar.update_traces(
-            marker_line_width=0,
-            textposition="outside",
-            textfont=dict(color="#F5A623", size=13),
-        )
-        st.plotly_chart(fig_bar, use_container_width=True, config={"displayModeBar": False})
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
 
-    # ── Transcript ──
-    with st.expander("📄  View full transcript"):
-        filler_words = list(metrics.get("filler_breakdown", {}).keys())
-        highlighted_text = highlight_fillers(transcript["text"], filler_words)
-        st.markdown(f'<div style="color:#B4BCC8;font-size:0.92rem;line-height:1.9;padding:0.5rem 0">{highlighted_text}</div>', unsafe_allow_html=True)
-        if filler_words:
-            st.markdown('<div style="font-size:0.74rem;color:var(--text-dim);margin-top:0.4rem;">🔴 highlighted words are the fillers counted above</div>', unsafe_allow_html=True)
+        if user_question := st.chat_input("How can I reduce my filler words?  •  What was my strongest moment?"):
+            st.session_state.messages.append({"role": "user", "content": user_question})
+            with st.chat_message("user"):
+                st.write(user_question)
 
-    # ── Coaching Feedback ──
-    st.markdown('<div class="section-label">Coaching Feedback</div>', unsafe_allow_html=True)
+            system = f"""You are a warm, expert communication coach in an ongoing coaching session.
 
-    with st.expander("🔍  Show draft (before self-review)"):
-        st.markdown(f'<div style="color:#8A93A3;font-size:0.88rem;line-height:1.75">{feedback["draft"]}</div>', unsafe_allow_html=True)
+    The person you're coaching is named {st.session_state.user_name} — always address them by this name.
+    The transcript below is from a recording they made and may mention other names (their own
+    introduction, people they refer to, etc.) — never adopt one of those as the person's name instead
+    of {st.session_state.user_name}.
 
-    st.markdown(f'<div class="feedback-card">{feedback["final"]}</div>', unsafe_allow_html=True)
+    Full speech context:
+    - Transcript: {transcript['text']}
+    - WPM: {metrics['wpm']} (ideal: 120-150), Fillers: {metrics['filler_breakdown']}, Score: {metrics['confidence_score']}/100
+    - Coaching feedback already given: {feedback['final']}
 
-    fb_col1, fb_col2 = st.columns([1, 1])
-    with fb_col1:
-        if st.button("🔄  Regenerate feedback", type="secondary"):
-            try:
-                with st.spinner("Getting a fresh take..."):
-                    st.session_state.feedback = get_coaching_feedback(transcript, metrics)
-                st.rerun()
-            except Exception as e:
-                st.markdown(f"""
-                <div class="error-card" style="margin-top:0.75rem;">
-                    <div class="error-title">⚠️  Couldn't regenerate feedback</div>
-                    <div class="error-msg">{html.escape(str(e))}</div>
-                </div>
-                """, unsafe_allow_html=True)
-    with fb_col2:
-        components.html(copy_button_html(feedback["final"]), height=48)
+    Be conversational, specific, and encouraging. Reference the actual transcript when relevant.
+    Keep responses concise — 2-4 sentences unless more detail is genuinely needed."""
 
-    # ── Chat ──
-    st.markdown("---")
-    st.markdown("""
-    <div class="chat-header-wrap">
-        <div class="chat-avatar">🎙️<div class="chat-dot"></div></div>
-        <div>
-            <div class="chat-title-text">Your AI speech coach</div>
-            <div style="font-size:0.74rem;color:var(--text-dim);margin-top:1px;">Online · powered by Llama 3.3</div>
-        </div>
-        <div class="chat-sub-text">Remembers your<br>full session</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<div style="color:#8A93A3;font-size:0.82rem;margin:0.75rem 0 1rem">Your coach has full context of your speech and feedback. Ask anything — it remembers the whole conversation.</div>', unsafe_allow_html=True)
+            messages_for_api = [{"role": "system", "content": system}]
+            for msg in st.session_state.messages:
+                messages_for_api.append({"role": msg["role"], "content": msg["content"]})
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+            with st.chat_message("assistant"):
+                typing_slot = st.empty()
+                typing_slot.markdown('<div class="typing-dots"><span></span><span></span><span></span></div>', unsafe_allow_html=True)
 
-    if user_question := st.chat_input("How can I reduce my filler words?  •  What was my strongest moment?"):
-        st.session_state.messages.append({"role": "user", "content": user_question})
-        with st.chat_message("user"):
-            st.write(user_question)
-
-        system = f"""You are a warm, expert communication coach in an ongoing coaching session.
-
-Full speech context:
-- Transcript: {transcript['text']}
-- WPM: {metrics['wpm']} (ideal: 120-150), Fillers: {metrics['filler_breakdown']}, Score: {metrics['confidence_score']}/100
-- Coaching feedback already given: {feedback['final']}
-
-Be conversational, specific, and encouraging. Reference the actual transcript when relevant.
-Keep responses concise — 2-4 sentences unless more detail is genuinely needed."""
-
-        messages_for_api = [{"role": "system", "content": system}]
-        for msg in st.session_state.messages:
-            messages_for_api.append({"role": msg["role"], "content": msg["content"]})
-
-        with st.chat_message("assistant"):
-            typing_slot = st.empty()
-            typing_slot.markdown('<div class="typing-dots"><span></span><span></span><span></span></div>', unsafe_allow_html=True)
-
-            try:
-                groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-                response = groq_client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=messages_for_api,
-                    max_tokens=500,
-                    temperature=0.7
-                )
-                reply = response.choices[0].message.content.strip()
-                typing_slot.write(reply)
-                st.session_state.messages.append({"role": "assistant", "content": reply})
-            except Exception as e:
-                typing_slot.markdown(f"""
-                <div class="error-card" style="margin:0;">
-                    <div class="error-title">⚠️  Couldn't reach the coach</div>
-                    <div class="error-msg">{html.escape(str(e))}</div>
-                    <div class="error-hint">Check your connection and try sending that again.</div>
-                </div>
-                """, unsafe_allow_html=True)
+                try:
+                    groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+                    response = groq_client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=messages_for_api,
+                        max_tokens=500,
+                        temperature=0.7
+                    )
+                    reply = response.choices[0].message.content.strip()
+                    typing_slot.write(reply)
+                    st.session_state.messages.append({"role": "assistant", "content": reply})
+                except Exception as e:
+                    typing_slot.markdown(f"""
+                    <div class="error-card" style="margin:0;">
+                        <div class="error-title">⚠️  Couldn't reach the coach</div>
+                        <div class="error-msg">{html.escape(str(e))}</div>
+                        <div class="error-hint">Check your connection and try sending that again.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("↩  Analyse a new recording", type="secondary"):
-        for key in ["transcript", "metrics", "feedback", "messages", "analysed"]:
+        for key in ["transcript", "metrics", "feedback", "messages", "analysed", "naturalness", "authenticity"]:
             del st.session_state[key]
         st.session_state.uploader_key += 1
         st.rerun()
